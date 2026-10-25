@@ -1,0 +1,526 @@
+/* =========================================================
+   VETERINARIA SAN MARCOS - ESTILOS GLOBALES Y TEMATIZACIÓN
+   Migración fiel desde estilos CSS originales (style.css, 
+   style_productos.css, style_producto.css, style_regristro.css)
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f7f6;
+  color: #333333;
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* =========================================================
+   ENCABEZADO Y NAVEGACIÓN
+   ========================================================= */
+#encabezado {
+  background-color: #2a9d8f;
+  color: #ffffff;
+  padding: 20px 15px;
+  text-align: center;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.logo-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 5px;
+}
+
+.icono-veterinaria {
+  font-size: 2rem;
+}
+
+#encabezado h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 2.1rem;
+  font-weight: 700;
+}
+
+#encabezado p {
+  margin: 5px 0 15px 0;
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+.header-acciones-top {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-toggle-tema {
+  font-size: 0.82rem;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 4px 12px;
+}
+
+.saludo-usuario {
+  font-size: 0.85rem;
+  color: #ffffff;
+}
+
+.btn-link-logout {
+  background: none;
+  border: none;
+  color: #ffd166;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+}
+
+.btn-link-logout:hover {
+  color: #ffffff;
+}
+
+nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+nav ul li {
+  display: inline-block;
+}
+
+.btn-menu {
+  display: inline-block;
+  background-color: #ffffff;
+  color: #2a9d8f;
+  padding: 8px 16px;
+  border-radius: 5px;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.btn-menu:hover,
+.btn-menu:focus {
+  background-color: #e8f5e9;
+  color: #218377;
+  text-decoration: none;
+}
+
+/* =========================================================
+   BANNERS
+   ========================================================= */
+#banner,
+#banner-oferta {
+  background-color: #e8f5e9;
+  padding: 30px 20px;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #2a9d8f;
+  text-align: center;
+}
+
+#banner h2,
+#banner-oferta h2 {
+  color: #264653;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+#banner p,
+#banner-oferta p {
+  color: #555555;
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+/* =========================================================
+   BOTONES PRIMARIOS (ORIGINALES)
+   ========================================================= */
+.btn-comprar,
+.btn-comprar:visited {
+  display: inline-block;
+  background-color: #2a9d8f;
+  color: #ffffff !important;
+  padding: 10px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.95rem;
+  transition: background-color 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-comprar:hover {
+  background-color: #218377;
+  color: #ffffff !important;
+}
+
+.btn-inicio {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  background-color: transparent;
+  color: #6c757d;
+  border: 1px solid #6c757d;
+  padding: 9px;
+  margin-top: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  text-decoration: none;
+}
+
+.btn-inicio:hover {
+  background-color: #6c757d;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+/* =========================================================
+   SECCIONES Y CONTENEDORES
+   ========================================================= */
+main {
+  padding: 20px 15px;
+  min-height: 70vh;
+}
+
+.seccion {
+  background-color: #ffffff;
+  max-width: 950px;
+  width: 100%;
+  padding: 30px;
+  border-radius: 8px;
+  border-top: 4px solid #2a9d8f;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  margin: 0 auto;
+}
+
+.seccion h2 {
+  color: #2a9d8f;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #e8f5e9;
+  padding-bottom: 8px;
+  text-align: center;
+}
+
+.seccion p {
+  color: #444444;
+}
+
+/* =========================================================
+   PRESENTACIÓN Y GALERÍA HOME (ORIGINAL STYLE.CSS)
+   ========================================================= */
+.presentacion {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.galeria {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.galeria .img {
+  width: 100%;
+  max-width: 450px;
+}
+
+.galeria img {
+  width: 100%;
+  max-width: 450px;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.descripcion.imagen {
+  font-weight: bold;
+  color: #2a9d8f;
+  margin-bottom: 8px;
+}
+
+.galeria .img.atencion img {
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+}
+
+.video {
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.seccion.seccion-video {
+  max-width: 800px;
+  margin: 20px auto 40px auto;
+  padding: 20px;
+  border-top: none;
+  box-shadow: none;
+  background-color: transparent;
+}
+
+.seccion-video .contenedor-video {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.seccion-video .contenedor-video video {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================================
+   CATÁLOGO Y TARJETA PRODUCTO
+   ========================================================= */
+.catalogo-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  max-width: 1200px;
+  margin: 25px auto;
+  padding: 0 10px;
+}
+
+.tarjeta-producto {
+  background-color: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 8px;
+  padding: 18px;
+  width: 260px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tarjeta-producto:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.tarjeta-producto .espacio-imagen {
+  height: 170px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.tarjeta-producto img {
+  max-width: 100%;
+  max-height: 160px;
+  object-fit: contain;
+}
+
+.tarjeta-producto h3 {
+  font-size: 1.05rem;
+  margin: 8px 0;
+  color: #264653;
+  min-height: 2.4rem;
+}
+
+.tarjeta-producto .descripcion {
+  font-size: 0.85rem;
+  color: #666666;
+  margin: 5px 0 10px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: 3.8rem;
+}
+
+.tarjeta-producto .precio {
+  font-weight: bold;
+  color: #2a9d8f;
+  font-size: 1.15rem;
+  margin: 8px 0;
+}
+
+/* =========================================================
+   FORMULARIOS (LOGIN, REGISTRO, CONTACTO)
+   ========================================================= */
+#contacto,
+.formulario-login-contenedor,
+.formulario-veterinario-contenedor {
+  max-width: 500px;
+  width: 100%;
+  margin: 25px auto;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+}
+
+fieldset {
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 20px;
+  margin: 0;
+}
+
+legend {
+  font-weight: bold;
+  color: #2a9d8f;
+  padding: 0 8px;
+  font-size: 1.05rem;
+  float: none;
+  width: auto;
+}
+
+/* =========================================================
+   PIE DE PÁGINA (FOOTER)
+   ========================================================= */
+footer#contacto,
+footer {
+  background-color: #2a9d8f;
+  color: #ffffff;
+  text-align: center;
+  padding: 25px 15px;
+  margin-top: 40px;
+}
+
+.footer-contenido {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.footer-contenido p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+/* =========================================================
+   MODO OSCURO (DARK THEME)
+   ========================================================= */
+body.modo-oscuro {
+  background-color: #14171a;
+  color: #e1e8ed;
+}
+
+body.modo-oscuro #encabezado {
+  background-color: #1b4943;
+}
+
+body.modo-oscuro .btn-menu {
+  background-color: #24292e;
+  color: #48cae4;
+  border-color: #3f4448;
+}
+
+body.modo-oscuro .btn-menu:hover {
+  background-color: #2d333b;
+  color: #90e0ef;
+}
+
+body.modo-oscuro #banner,
+body.modo-oscuro #banner-oferta {
+  background-color: #1a2f2b;
+  border-bottom-color: #2a9d8f;
+}
+
+body.modo-oscuro #banner h2,
+body.modo-oscuro #banner-oferta h2 {
+  color: #83c5be;
+}
+
+body.modo-oscuro #banner p,
+body.modo-oscuro #banner-oferta p {
+  color: #c5d1d9;
+}
+
+body.modo-oscuro .seccion,
+body.modo-oscuro .tarjeta-producto,
+body.modo-oscuro #contacto,
+body.modo-oscuro .formulario-login-contenedor,
+body.modo-oscuro .card {
+  background-color: #1f2428 !important;
+  color: #e1e8ed;
+  border-color: #373e47 !important;
+}
+
+body.modo-oscuro .tarjeta-producto h3 {
+  color: #83c5be;
+}
+
+body.modo-oscuro .tarjeta-producto .descripcion,
+body.modo-oscuro .seccion p {
+  color: #adbac7;
+}
+
+body.modo-oscuro fieldset {
+  border-color: #373e47;
+}
+
+body.modo-oscuro legend {
+  color: #83c5be;
+}
+
+body.modo-oscuro .form-control,
+body.modo-oscuro .form-select {
+  background-color: #2d333b;
+  border-color: #444c56;
+  color: #adbac7;
+}
+
+body.modo-oscuro .form-control:focus,
+body.modo-oscuro .form-select:focus {
+  background-color: #2d333b;
+  color: #ffffff;
+  border-color: #2a9d8f;
+}
+
+body.modo-oscuro footer,
+body.modo-oscuro footer#contacto {
+  background-color: #1b4943;
+}
+
+body.modo-oscuro .table {
+  color: #e1e8ed;
+  border-color: #373e47;
+}
+
+body.modo-oscuro .table > :not(caption) > * > * {
+  background-color: #1f2428;
+  color: #e1e8ed;
+  border-color: #373e47;
+}
+
+body.modo-oscuro .list-group-item {
+  background-color: #1f2428;
+  color: #e1e8ed;
+  border-color: #373e47;
+}
