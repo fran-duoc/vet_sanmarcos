@@ -6,7 +6,7 @@ import imgArena from '../assets/img/arena-gato.jpg';
 import imgMultivitaminico from '../assets/img/multivitaminico.jpg';
 import imgTucan from '../assets/img/tucan.jpg';
 import imgConejo from '../assets/img/comida_conejo.jpg';
-import imgDefault from '../assets/img/default-pet-product.png';
+import imgDefault from '../assets/img/ecopet.png';
 
 export const imagenPorDefecto = imgDefault;
 

@@ -13,7 +13,12 @@ function TarjetaProducto({
   categoria,
   especie,
   receta,
-  rangoEdadPeso
+  rangoEdadPeso,
+  stock,
+  activo,
+  fechaIngreso,
+  onEditar,
+  onEliminar
 }) {
   const [meGusta, setMeGusta] = useState(false);
   const [agregadoReciente, setAgregadoReciente] = useState(false);
@@ -119,6 +124,45 @@ function TarjetaProducto({
         >
           {agregadoReciente ? '¡Agregado al carrito!' : 'Agregar al carrito'}
         </Button>
+
+        {(onEditar || onEliminar) && (
+          <div className="d-flex gap-2 mt-1">
+            {onEditar && (
+              <Button
+                variant="outline-secondary"
+                size="sm"
+                className="w-100"
+                onClick={() => onEditar({
+                  id,
+                  imagen,
+                  titulo,
+                  descripcion,
+                  precio,
+                  precioNumero,
+                  categoria,
+                  especie,
+                  receta,
+                  rangoEdadPeso,
+                  stock,
+                  activo,
+                  fechaIngreso
+                })}
+              >
+                Editar
+              </Button>
+            )}
+            {onEliminar && (
+              <Button
+                variant="outline-danger"
+                size="sm"
+                className="w-100"
+                onClick={() => onEliminar(id, titulo)}
+              >
+                Eliminar
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );
