@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useLocation, Link } from 'react-router-dom';
 import { Button, Badge, Alert } from 'react-bootstrap';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { itemsMenu } from '../data/itemsMenu';
 import { useCart } from '../context/CartContext';
-import { obtenerProductoPorId } from '../services/productoService';
 
 // Importación de imágenes
 import imgBadge from '../assets/img/badge.jpg';
@@ -101,29 +100,10 @@ function DetalleProducto() {
   const [cantidad, setCantidad] = useState(1);
   const [mensajeExito, setMensajeExito] = useState(false);
 
-  const [producto, setProducto] = useState(location.state || null);
-  const [cargando, setCargando] = useState(!location.state);
-
-  // Buscar el producto por id en el backend si no viene en el estado de navegación
-  useEffect(() => {
-    if (!producto && id) {
-      setCargando(true);
-      obtenerProductoPorId(id)
-        .then((data) => {
-          if (data) {
-            setProducto(data);
-          } else {
-            const fallback = listaProductos.find((p) => String(p.id) === String(id));
-            if (fallback) setProducto(fallback);
-          }
-        })
-        .catch(() => {
-          const fallback = listaProductos.find((p) => String(p.id) === String(id));
-          if (fallback) setProducto(fallback);
-        })
-        .finally(() => setCargando(false));
-    }
-  }, [id, producto]);
+  // Buscar el producto por id de la URL o usar el estado pasado en la navegación
+  const productoState = location.state;
+  const productoEncontrado = listaProductos.find((p) => String(p.id) === String(id));
+  const producto = productoState || productoEncontrado;
 
   const handleAgregar = () => {
     if (producto) {
@@ -132,22 +112,6 @@ function DetalleProducto() {
       setTimeout(() => setMensajeExito(false), 2500);
     }
   };
-
-  if (cargando) {
-    return (
-      <div className="vista-contenedor">
-        <Header
-          titulo="Cargando..."
-          subtitulo="Obteniendo información del producto"
-          itemsMenu={itemsMenu}
-        />
-        <main className="d-flex justify-content-center my-5">
-          <p className="text-muted">Cargando producto desde el servidor...</p>
-        </main>
-        <Footer anio={2026} empresa="Veterinaria San Marcos" />
-      </div>
-    );
-  }
 
   if (!producto) {
     return (

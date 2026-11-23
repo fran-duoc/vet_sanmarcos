@@ -20,7 +20,7 @@ function Login() {
 
     if (!correo.trim()) {
       nuevosErrores.correo = 'El correo electrónico es obligatorio.';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())) {
+    } else if (correo.includes('@') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo.trim())) {
       nuevosErrores.correo = 'Ingrese un formato de correo válido.';
     }
 
@@ -31,7 +31,7 @@ function Login() {
     return nuevosErrores;
   };
 
-  const manejarSubmit = (e) => {
+  const manejarSubmit = async (e) => {
     e.preventDefault();
     setMensajeAlerta(null);
 
@@ -41,7 +41,7 @@ function Login() {
       return;
     }
 
-    const resultado = login(correo.trim(), contrasena);
+    const resultado = await login(correo.trim(), contrasena);
 
     if (resultado.exito) {
       setMensajeAlerta({ tipo: 'success', texto: '¡Inicio de sesión exitoso! Redirigiendo...' });
@@ -76,16 +76,16 @@ function Login() {
               <div className="p-2 mb-3 bg-light rounded text-start small border">
                 <strong>Credenciales de prueba:</strong>
                 <br />
-                Email: <code>admin@vetsanmarcos.cl</code>
+                Admin: <code>admin</code> (o <code>admin@vetsanmarcos.cl</code>) / <code>admin123</code>
                 <br />
-                Contraseña: <code>Admin123*</code>
+                User: <code>user</code> / <code>user123</code>
               </div>
 
               <Form.Group className="mb-3" controlId="correo">
                 <Form.Label>Email:</Form.Label>
                 <Form.Control
-                  type="email"
-                  placeholder="@gmail.com, @duocuc.cl o @outlook.com"
+                  type="text"
+                  placeholder="admin o correo@duocuc.cl"
                   value={correo}
                   onChange={(e) => {
                     setCorreo(e.target.value);

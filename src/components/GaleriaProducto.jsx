@@ -1,6 +1,6 @@
 import TarjetaProducto from './TarjetaProducto';
 
-function GaleriaProductos({ productos = [], onEditar, onEliminar }) {
+function GaleriaProductos({ productos = [] }) {
   if (!productos || productos.length === 0) {
     return (
       <div className="text-center my-4 p-4 sin-productos">
@@ -24,11 +24,6 @@ function GaleriaProductos({ productos = [], onEditar, onEliminar }) {
           especie={producto.especie}
           receta={producto.receta}
           rangoEdadPeso={producto.rangoEdadPeso}
-          stock={producto.stock}
-          activo={producto.activo}
-          fechaIngreso={producto.fechaIngreso}
-          onEditar={onEditar}
-          onEliminar={onEliminar}
         />
       ))}
     </div>

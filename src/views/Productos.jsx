@@ -1,16 +1,57 @@
 import { useState, useMemo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import GaleriaProductos from '../components/GaleriaProducto';
 import { itemsMenu } from '../data/itemsMenu';
-import { Form, Button, InputGroup, Modal, Badge } from 'react-bootstrap';
+import { Form, Button, InputGroup, Alert, Table } from 'react-bootstrap';
+import ProductoService from '../services/ProductoService';
 import { useAuth } from '../context/AuthContext';
-import {
-  obtenerProductos,
-  crearProducto,
-  actualizarProducto,
-  eliminarProducto
-} from '../services/productoService';
+
+import arena from '../assets/img/arena-gato.jpg';
+import champu from '../assets/img/champu-mascota.jpg';
+import com_conejo from '../assets/img/comida_conejo.jpg';
+import ecopet from '../assets/img/ecopet.png';
+import multivitaminico from '../assets/img/multivitaminico.jpg';
+import pipeta from '../assets/img/pipeta.jpg';
+import dental from '../assets/img/set-dental.jpg';
+import tucan from '../assets/img/tucan.jpg';
+
+const listaProductosDefault = [
+  {
+    id: 1,
+    titulo: "Alimento Canino Premium 15kg",
+    nombre: "Alimento Canino Premium 15kg",
+    descripcion: "Alimento balanceado para perros adultos",
+    precio: "$45.990",
+    precioNumero: 45990,
+    categoria: "Alimentos",
+    especie: "Perro",
+    imagen: ecopet
+  },
+  {
+    id: 2,
+    titulo: "Antiparasitario Pipeta Felino",
+    nombre: "Antiparasitario Pipeta Felino",
+    descripcion: "Tratamiento contra pulgas y garrapatas para gatos",
+    precio: "$8.990",
+    precioNumero: 8990,
+    categoria: "Medicamentos",
+    especie: "Gato",
+    imagen: pipeta
+  },
+  {
+    id: 3,
+    titulo: "Shampoo Antipulgas Canino 500ml",
+    nombre: "Shampoo Antipulgas Canino 500ml",
+    descripcion: "Shampoo medicado para higiene canina",
+    precio: "$6.500",
+    precioNumero: 6500,
+    categoria: "Higiene",
+    especie: "Perro Gato",
+    imagen: champu
+  }
+];
 
 const CATEGORIAS = ['Todas', 'Alimentos', 'Medicamentos', 'Accesorios', 'Higiene'];
 
@@ -18,141 +59,61 @@ function Productos() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('Todas');
   const [terminoBusqueda, setTerminoBusqueda] = useState('');
   const [listaProductos, setListaProductos] = useState([]);
-  const [cargando, setCargando] = useState(true);
+  const [mensaje, setMensaje] = useState(null);
 
-  // Verificación de credenciales de Administrador
-  let usuario = null;
-  try {
-    const auth = useAuth();
-    usuario = auth?.usuario;
-  } catch {
-    usuario = null;
-  }
-  const esAdmin = Boolean(usuario && usuario.rol === 'admin');
+  const { esAdmin, estaAutenticado, usuario } = useAuth();
 
-  // Estado para el modal de Crear / Editar producto
-  const [modalAbierto, setModalAbierto] = useState(false);
-  const [productoAEditar, setProductoAEditar] = useState(null);
-  const [formulario, setFormulario] = useState({
-    nombre: '',
-    descripcion: '',
-    precio: '',
-    stock: 10,
-    categoria: 'Alimentos',
-    especie: 'Perro'
-  });
+  const cargarProductos = () => {
+    ProductoService.obtenerTodos()
+      .then((response) => {
+        const rawList = response.data._embedded?.productoList || (Array.isArray(response.data) ? response.data : []);
+        const imagenesDisponibles = [ecopet, pipeta, champu, dental, arena, multivitaminico, tucan, com_conejo];
 
-  // Cargar productos desde Spring Boot al montar la vista
+        const mapeados = rawList.map((item, idx) => {
+          const imgElegida = imagenesDisponibles[idx % imagenesDisponibles.length];
+          return {
+            id: item.id,
+            titulo: item.nombre,
+            nombre: item.nombre,
+            descripcion: item.descripcion || '',
+            precio: typeof item.precio === 'number' ? `$${item.precio.toLocaleString('es-CL')}` : item.precio,
+            precioNumero: typeof item.precio === 'number' ? item.precio : parseInt(String(item.precio).replace(/\D/g, ''), 10) || 0,
+            stock: item.stock,
+            activo: item.activo,
+            categoria: item.categoria || 'Alimentos',
+            especie: item.especie || 'Perro Gato',
+            imagen: item.imagen || imgElegida
+          };
+        });
+
+        setListaProductos(mapeados);
+      })
+      .catch((error) => {
+        console.error('Error al cargar productos desde backend:', error);
+        setListaProductos(listaProductosDefault);
+      });
+  };
+
   useEffect(() => {
     cargarProductos();
   }, []);
 
-  const cargarProductos = async () => {
-    try {
-      setCargando(true);
-      const data = await obtenerProductos();
-      setListaProductos(data);
-    } catch (err) {
-      console.error('Error al cargar productos desde backend:', err);
-    } finally {
-      setCargando(false);
-    }
-  };
-
-  const handleAbrirCrear = () => {
-    if (!esAdmin) {
-      alert('Acceso restringido: Debes iniciar sesión como administrador para crear productos.');
-      return;
-    }
-    setProductoAEditar(null);
-    setFormulario({
-      nombre: '',
-      descripcion: '',
-      precio: '',
-      stock: 10,
-      categoria: 'Alimentos',
-      especie: 'Perro'
-    });
-    setModalAbierto(true);
-  };
-
-  const handleAbrirEditar = (producto) => {
-    if (!esAdmin) {
-      alert('Acceso restringido: Debes iniciar sesión como administrador para editar productos.');
-      return;
-    }
-    setProductoAEditar(producto);
-    setFormulario({
-      nombre: producto.titulo || producto.nombre || '',
-      descripcion: producto.descripcion || '',
-      precio: producto.precioNumero ?? (parseInt(String(producto.precio || '').replace(/\D/g, ''), 10) || ''),
-      stock: producto.stock ?? 10,
-      categoria: producto.categoria || 'Alimentos',
-      especie: producto.especie || 'Perro'
-    });
-    setModalAbierto(true);
-  };
-
-  const handleGuardar = async (e) => {
-    e.preventDefault();
-    if (!esAdmin) {
-      alert('Acceso restringido: Debes tener rol de administrador para guardar cambios.');
-      return;
-    }
-
-    try {
-      if (productoAEditar) {
-        // Operación PUT / PATCH hacia el backend
-        const datosActualizados = {
-          ...productoAEditar,
-          titulo: formulario.nombre,
-          nombre: formulario.nombre,
-          descripcion: formulario.descripcion,
-          precioNumero: Number(formulario.precio),
-          stock: Number(formulario.stock),
-          categoria: formulario.categoria,
-          especie: formulario.especie
-        };
-        const actualizado = await actualizarProducto(productoAEditar.id, datosActualizados);
-        setListaProductos((prev) =>
-          prev.map((p) => (p.id === actualizado.id ? actualizado : p))
-        );
-      } else {
-        // Operación POST hacia el backend
-        const nuevo = await crearProducto({
-          titulo: formulario.nombre,
-          nombre: formulario.nombre,
-          descripcion: formulario.descripcion,
-          precioNumero: Number(formulario.precio),
-          stock: Number(formulario.stock),
-          categoria: formulario.categoria,
-          especie: formulario.especie
+  const eliminarProducto = (id) => {
+    if (window.confirm('¿Está seguro de eliminar este producto?')) {
+      ProductoService.eliminarPorId(id)
+        .then(() => {
+          setMensaje({ tipo: 'success', texto: 'Producto eliminado exitosamente.' });
+          cargarProductos();
+        })
+        .catch((error) => {
+          console.error('Error al eliminar producto:', error);
+          setMensaje({
+            tipo: 'danger',
+            texto: error.response?.status === 403
+              ? 'Permiso denegado: solo ADMIN puede eliminar productos.'
+              : 'Error al eliminar el producto.'
+          });
         });
-        setListaProductos((prev) => [...prev, nuevo]);
-      }
-      setModalAbierto(false);
-    } catch (err) {
-      console.error('Error al guardar producto:', err);
-      alert('Hubo un error al comunicar la operación con el backend Spring Boot.');
-    }
-  };
-
-  const handleEliminar = async (id, titulo) => {
-    if (!esAdmin) {
-      alert('Acceso restringido: Debes tener rol de administrador para eliminar productos.');
-      return;
-    }
-
-    const confirmar = window.confirm(`¿Deseas eliminar el producto "${titulo || id}" del catálogo?`);
-    if (!confirmar) return;
-
-    try {
-      // Operación DELETE hacia el backend
-      await eliminarProducto(id);
-      setListaProductos((prev) => prev.filter((p) => p.id !== id));
-    } catch (err) {
-      console.error('Error al eliminar producto:', err);
-      alert('Hubo un error al eliminar el producto en el backend Spring Boot.');
     }
   };
 
@@ -163,16 +124,19 @@ function Productos() {
         (prod.categoria && prod.categoria.toLowerCase() === categoriaSeleccionada.toLowerCase());
 
       const textoBusqueda = terminoBusqueda.trim().toLowerCase();
+      const tituloStr = (prod.titulo || prod.nombre || '').toLowerCase();
+      const descStr = (prod.descripcion || '').toLowerCase();
+      const espStr = (prod.especie || '').toLowerCase();
+
       const coincideTexto =
         textoBusqueda === '' ||
-        (prod.titulo && prod.titulo.toLowerCase().includes(textoBusqueda)) ||
-        (prod.nombre && prod.nombre.toLowerCase().includes(textoBusqueda)) ||
-        (prod.descripcion && prod.descripcion.toLowerCase().includes(textoBusqueda)) ||
-        (prod.especie && prod.especie.toLowerCase().includes(textoBusqueda));
+        tituloStr.includes(textoBusqueda) ||
+        descStr.includes(textoBusqueda) ||
+        espStr.includes(textoBusqueda);
 
       return coincideCategoria && coincideTexto;
     });
-  }, [listaProductos, categoriaSeleccionada, terminoBusqueda]);
+  }, [categoriaSeleccionada, terminoBusqueda, listaProductos]);
 
   return (
     <div className="vista-contenedor">
@@ -192,25 +156,66 @@ function Productos() {
           <h2>Catálogo de la Tienda</h2>
           <p className="text-center">Utiliza los filtros de categoría o el buscador para encontrar lo que necesitas:</p>
 
-          {/* Panel de administración: visible SOLO cuando el usuario autenticado es Administrador */}
+          {mensaje && (
+            <Alert variant={mensaje.tipo} dismissible onClose={() => setMensaje(null)} className="mx-auto" style={{ maxWidth: '800px' }}>
+              {mensaje.texto}
+            </Alert>
+          )}
+
+          {/* Panel de administración CRUD visible exclusivamente para rol ADMIN */}
           {esAdmin && (
-            <div className="d-flex justify-content-center align-items-center gap-3 mb-4">
-              <Badge bg="success" className="px-3 py-2 fs-6">
-                Modo Administrador
-              </Badge>
-              <Button
-                onClick={handleAbrirCrear}
-                style={{
-                  backgroundColor: '#2a9d8f',
-                  borderColor: '#2a9d8f',
-                  color: '#ffffff',
-                  fontWeight: 'bold',
-                  padding: '8px 20px'
-                }}
-              >
-                + Agregar Nuevo Producto
-              </Button>
+            <div className="admin-panel my-4 p-3 border rounded bg-light mx-auto" style={{ maxWidth: '950px' }}>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h4 className="mb-0 text-success fw-bold">Panel de Gestión CRUD (Rol ADMIN)</h4>
+                <Link to="/productos/nuevo" className="btn btn-success btn-sm fw-bold">
+                  + Agregar Nuevo Producto
+                </Link>
+              </div>
+              <Table bordered hover responsive className="bg-white align-middle small">
+                <thead className="table-light">
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th style={{ width: '160px' }}>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {listaProductos.map((p) => (
+                    <tr key={p.id}>
+                      <td>{p.id}</td>
+                      <td><strong>{p.titulo || p.nombre}</strong></td>
+                      <td>{p.descripcion}</td>
+                      <td>{p.precio}</td>
+                      <td>{p.stock}</td>
+                      <td>
+                        <div className="d-flex gap-1">
+                          <Link to={`/productos/editar/${p.id}`} className="btn btn-warning btn-sm">
+                            Editar
+                          </Link>
+                          <Button
+                            variant="danger"
+                            size="sm"
+                            onClick={() => eliminarProducto(p.id)}
+                          >
+                            Eliminar
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             </div>
+          )}
+
+          {/* Mensaje informativo para rol USER */}
+          {estaAutenticado && !esAdmin && (
+            <Alert variant="info" className="mx-auto text-center" style={{ maxWidth: '800px' }}>
+              Sesión iniciada como <strong>USER</strong> ({usuario?.nombre}). Tienes permisos para consultar el catálogo.
+            </Alert>
           )}
 
           {/* Barra de Búsqueda y Filtros */}
@@ -255,136 +260,13 @@ function Productos() {
           </div>
 
           <div className="text-muted small text-center mb-3">
-            {cargando ? (
-              <span>Cargando productos desde el servidor...</span>
-            ) : (
-              <span>Mostrando {productosFiltrados.length} de {listaProductos.length} productos</span>
-            )}
+            Mostrando {productosFiltrados.length} de {listaProductos.length} productos
           </div>
 
-          {/* Galería de Productos: botones Editar y Eliminar condicionados a esAdmin */}
-          <GaleriaProductos
-            productos={productosFiltrados}
-            onEditar={esAdmin ? handleAbrirEditar : null}
-            onEliminar={esAdmin ? handleEliminar : null}
-          />
+          {/* Galería de Productos */}
+          <GaleriaProductos productos={productosFiltrados} />
         </section>
       </main>
-
-      {/* Modal para Crear y Editar Producto (Solo Administrador) */}
-      <Modal show={modalAbierto} onHide={() => setModalAbierto(false)} centered>
-        <Modal.Header closeButton style={{ backgroundColor: '#2a9d8f', color: '#ffffff' }}>
-          <Modal.Title style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
-            {productoAEditar ? 'Editar Producto (Admin)' : 'Nuevo Producto (Admin)'}
-          </Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleGuardar}>
-          <Modal.Body>
-            <Form.Group className="mb-3" controlId="formNombreProducto">
-              <Form.Label className="fw-bold">Nombre del Producto</Form.Label>
-              <Form.Control
-                type="text"
-                required
-                maxLength={100}
-                placeholder="Ej. Alimento Premium Cachorro"
-                value={formulario.nombre}
-                onChange={(e) => setFormulario({ ...formulario, nombre: e.target.value })}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formDescripcionProducto">
-              <Form.Label className="fw-bold">Descripción</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                maxLength={255}
-                placeholder="Descripción veterinaria del producto"
-                value={formulario.descripcion}
-                onChange={(e) => setFormulario({ ...formulario, descripcion: e.target.value })}
-              />
-            </Form.Group>
-
-            <div className="row">
-              <div className="col-md-6">
-                <Form.Group className="mb-3" controlId="formPrecioProducto">
-                  <Form.Label className="fw-bold">Precio ($ CLP)</Form.Label>
-                  <Form.Control
-                    type="number"
-                    required
-                    min={0}
-                    placeholder="Ej. 19990"
-                    value={formulario.precio}
-                    onChange={(e) => setFormulario({ ...formulario, precio: e.target.value })}
-                  />
-                </Form.Group>
-              </div>
-
-              <div className="col-md-6">
-                <Form.Group className="mb-3" controlId="formStockProducto">
-                  <Form.Label className="fw-bold">Stock</Form.Label>
-                  <Form.Control
-                    type="number"
-                    required
-                    min={0}
-                    placeholder="Ej. 20"
-                    value={formulario.stock}
-                    onChange={(e) => setFormulario({ ...formulario, stock: e.target.value })}
-                  />
-                </Form.Group>
-              </div>
-            </div>
-
-            <div className="row">
-              <div className="col-md-6">
-                <Form.Group className="mb-3" controlId="formCategoriaProducto">
-                  <Form.Label className="fw-bold">Categoría</Form.Label>
-                  <Form.Select
-                    value={formulario.categoria}
-                    onChange={(e) => setFormulario({ ...formulario, categoria: e.target.value })}
-                  >
-                    <option value="Alimentos">Alimentos</option>
-                    <option value="Medicamentos">Medicamentos</option>
-                    <option value="Higiene">Higiene</option>
-                    <option value="Accesorios">Accesorios</option>
-                  </Form.Select>
-                </Form.Group>
-              </div>
-
-              <div className="col-md-6">
-                <Form.Group className="mb-3" controlId="formEspecieProducto">
-                  <Form.Label className="fw-bold">Especie</Form.Label>
-                  <Form.Select
-                    value={formulario.especie}
-                    onChange={(e) => setFormulario({ ...formulario, especie: e.target.value })}
-                  >
-                    <option value="Perro">Perro</option>
-                    <option value="Gato">Gato</option>
-                    <option value="Conejo">Conejo</option>
-                    <option value="Exóticos">Exóticos</option>
-                    <option value="Perro Gato">Perro Gato</option>
-                  </Form.Select>
-                </Form.Group>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setModalAbierto(false)}>
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              style={{
-                backgroundColor: '#2a9d8f',
-                borderColor: '#2a9d8f',
-                color: '#ffffff',
-                fontWeight: 'bold'
-              }}
-            >
-              {productoAEditar ? 'Guardar Cambios' : 'Crear Producto'}
-            </Button>
-          </Modal.Footer>
-        </Form>
-      </Modal>
 
       <Footer anio={2026} empresa="Veterinaria San Marcos" />
     </div>

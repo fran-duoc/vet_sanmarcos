@@ -14,30 +14,43 @@ import MiPerfil from './views/MiPerfil';
 import Nosotros from './views/Nosotros';
 import NotFound from './views/NotFound';
 
+// Cambiado de Book a Cliente
+import ClienteList from './components/ClienteList';
+import ClienteForm from './components/ClienteForm';
+import ProductoForm from './components/ProductoForm';
+
 function App() {
   return (
     <AuthProvider>
-        <CartProvider>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/productos" element={<Productos />} />
-            <Route path="/producto/:id" element={<DetalleProducto />} />
-            <Route path="/detalle" element={<DetalleProducto />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/registro" element={<Registro />} />
-            <Route path="/nosotros" element={<Nosotros />} />
-            <Route path="/carrito" element={<Carrito />} />
-            <Route
-              path="/perfil"
-              element={
-                <ProtectedRoute>
-                  <MiPerfil />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </CartProvider>
+      <CartProvider>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/productos" element={<Productos />} />
+          <Route path="/productos/nuevo" element={<ProductoForm />} />
+          <Route path="/productos/editar/:id" element={<ProductoForm />} />
+          <Route path="/producto/:id" element={<DetalleProducto />} />
+          <Route path="/detalle" element={<DetalleProducto />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/registro" element={<Registro />} />
+          <Route path="/nosotros" element={<Nosotros />} />
+          <Route path="/carrito" element={<Carrito />} />
+          <Route
+            path="/perfil"
+            element={
+              <ProtectedRoute>
+                <MiPerfil />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Rutas de Clientes */}
+          <Route path="/clientes" element={<ClienteList />} />
+          <Route path="/clientes/nuevo" element={<ClienteForm />} />
+          <Route path="/clientes/editar/:id" element={<ClienteForm />} />
+
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </CartProvider>
     </AuthProvider>
   );
 }

@@ -55,6 +55,8 @@ function Header({
     setModoOscuro((prev) => !prev);
   };
 
+  const esAdmin = usuario && (usuario.rol === 'admin' || usuario.rolBackend === 'ROLE_ADMIN');
+
   return (
     <header id="encabezado">
       <div className="logo-titulo">
@@ -75,7 +77,12 @@ function Header({
 
         {usuario && (
           <span className="saludo-usuario">
-            Hola, <strong>{usuario.nombre}</strong> |{' '}
+            Hola, <strong>{usuario.nombre || usuario.username}</strong>
+            {esAdmin ? (
+              <Badge bg="warning" text="dark" className="ms-2">ADMIN</Badge>
+            ) : (
+              <Badge bg="info" className="ms-2">USER</Badge>
+            )} |{' '}
             <button
               onClick={logout}
               className="btn-link-logout"
